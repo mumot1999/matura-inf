@@ -3,6 +3,8 @@ dane = [4,11,4,1,4,7,11,12,13,14,7,0,-7]
 # dane = [14,7,0,3]
 
 def oblicz_roznice(a,b):
+    if a is None or b is None:
+        return None
     return abs(a - b)
 
 roznice = [oblicz_roznice(a,b) for a,b in zip(dane[1:], dane)]
@@ -21,36 +23,64 @@ def ostatnia_liczba_dodana_do_ciagu():
     
     return ciagi_regularne[-1][-1]
 
-for i, liczba in enumerate(dane):
-    aktualna_liczba, kolejna_liczba = [liczba, dane[i+1] if i+1 < len(dane) else None]
+for i, liczba in enumerate(dane[:-1]):
+    aktualna_liczba, kolejna_liczba = [liczba, dane[i+1]]
+    ostatnia_liczba = ostatnia_liczba_dodana_do_ciagu()
 
-    if kolejna_liczba is None:
-        ciagi_regularne.append([ostatnia_liczba_dodana_do_ciagu(), aktualna_liczba])
-        continue
-            
+    def porownaj_roznice(a,b):
+        if a == -1:
+            return False
+        return a == b
 
-    if bufor == []:
-        if(ostatnia_liczba_dodana_do_ciagu() and oblicz_roznice(aktualna_liczba, kolejna_liczba) == oblicz_roznice(ostatnia_liczba_dodana_do_ciagu(), aktualna_liczba)):
-            bufor = [ostatnia_liczba_dodana_do_ciagu(), aktualna_liczba]
-        else:
-            bufor = [aktualna_liczba]
-        continue
+    def bufor_jest_pusty():
+         return bufor == []
+
+    def w_buforze_jest_jedna_liczba():
+        return len(bufor) == 1
+
+    def kolejna_liczba_jest_ostatnia_liczba():
+        return len(dane) == i+2
     
-    if len(bufor) == 1:
+    def aktualna_liczba_pasuje_do_bufora():
+        return porownaj_roznice(aktualna_roznica, roznica_bufora)
+    
+    def ostatnia_liczba_pasuje_do_2_kolejnych_liczb():
+        return porownaj_roznice(oblicz_roznice(ostatnia_liczba, aktualna_liczba), oblicz_roznice(aktualna_liczba, kolejna_liczba))
+
+    def roznica_bufora():
+        if len(bufor) < 2:
+            return None
+        return oblicz_roznice(bufor[0], bufor[1])
+
+    def aktualna_roznica():
+        return oblicz_roznice(aktualna_liczba, bufor[-1])
+
+    def kolejna_roznica():
+        return oblicz_roznice(kolejna_liczba, bufor[-1])
+
+
+    def czy_dodac_bufor_do_ciagow():
+        return not porownaj_roznice(roznica_bufora(), kolejna_roznica())
+
+    def czy_dodac_aktualna_liczbe_do_bufora(): 
+        return bufor_jest_pusty() \
+        or w_buforze_jest_jedna_liczba() \
+        or aktualna_liczba_pasuje_do_bufora
+
+    def czy_dodac_ostatnia_liczbe_do_bufora():
+        return ostatnia_liczba_pasuje_do_2_kolejnych_liczb()
+
+    if czy_dodac_ostatnia_liczbe_do_bufora():
+        bufor.append(ostatnia_liczba)
+
+    if czy_dodac_aktualna_liczbe_do_bufora():
         bufor.append(aktualna_liczba)
-        continue
-
-    aktualna_roznica = oblicz_roznice(aktualna_liczba, bufor[-1])
-    roznica_bufora = oblicz_roznice(bufor[0], bufor[1])
-
-    if aktualna_roznica == roznica_bufora:
-        bufor += [aktualna_liczba]
-
-    kolejna_roznica = oblicz_roznice(kolejna_liczba, bufor[-1])
-
-    if kolejna_roznica != roznica_bufora:
+    
+    if czy_dodac_bufor_do_ciagow():
         ciagi_regularne.append(bufor)
         bufor = []
+        if czy_dodac_aktualna_liczbe_do_bufora():
+            bufor.append(aktualna_liczba)
     
 print(dane)
 print(ciagi_regularne)
