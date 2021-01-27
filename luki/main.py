@@ -1,5 +1,5 @@
 # dane = list(map(int, open("dane4.txt").readlines()))
-dane = [4,11,4,1,4,7,11,12,13,14,7,0,-7]
+dane = [4,11,4,1,4,7,11,12,13,14,7,0,3]
 # dane = [14,7,0,3]
 
 def oblicz_roznice(a,b):
@@ -42,7 +42,10 @@ for i, liczba in enumerate(dane[:-1]):
         return len(dane) == i+2
     
     def aktualna_liczba_pasuje_do_bufora():
-        return porownaj_roznice(aktualna_roznica, roznica_bufora)
+        return porownaj_roznice(aktualna_roznica(), roznica_bufora())
+    
+    def kolejna_liczba_pasuje_do_bufora():
+        return porownaj_roznice(kolejna_roznica(), roznica_bufora())
     
     def ostatnia_liczba_pasuje_do_2_kolejnych_liczb():
         return porownaj_roznice(oblicz_roznice(ostatnia_liczba, aktualna_liczba), oblicz_roznice(aktualna_liczba, kolejna_liczba))
@@ -60,15 +63,17 @@ for i, liczba in enumerate(dane[:-1]):
 
 
     def czy_dodac_bufor_do_ciagow():
-        return not porownaj_roznice(roznica_bufora(), kolejna_roznica())
+        return len(bufor) >= 2 and porownaj_roznice(roznica_bufora(), kolejna_roznica()) is False \
+            or kolejna_liczba_jest_ostatnia_liczba()
 
     def czy_dodac_aktualna_liczbe_do_bufora(): 
-        return bufor_jest_pusty() \
-        or w_buforze_jest_jedna_liczba() \
-        or aktualna_liczba_pasuje_do_bufora
+        return len(bufor) <= 1 or aktualna_liczba_pasuje_do_bufora()
 
     def czy_dodac_ostatnia_liczbe_do_bufora():
-        return ostatnia_liczba_pasuje_do_2_kolejnych_liczb()
+        return len(bufor) == 0 and ostatnia_liczba_pasuje_do_2_kolejnych_liczb()
+
+    def czy_dodac_kolejna_liczbe_do_bufora():
+        return kolejna_liczba_pasuje_do_bufora() and kolejna_liczba_jest_ostatnia_liczba()
 
     if czy_dodac_ostatnia_liczbe_do_bufora():
         bufor.append(ostatnia_liczba)
@@ -76,15 +81,18 @@ for i, liczba in enumerate(dane[:-1]):
     if czy_dodac_aktualna_liczbe_do_bufora():
         bufor.append(aktualna_liczba)
     
+    if czy_dodac_kolejna_liczbe_do_bufora():
+        bufor.append(kolejna_liczba)
+
     if czy_dodac_bufor_do_ciagow():
         ciagi_regularne.append(bufor)
         bufor = []
-        if czy_dodac_aktualna_liczbe_do_bufora():
-            bufor.append(aktualna_liczba)
+        if kolejna_liczba_jest_ostatnia_liczba():
+            ciagi_regularne.append([aktualna_liczba, kolejna_liczba])
     
 print(dane)
 print(ciagi_regularne)
-print(len(max(ciagi_regularne, key=len))+1)
+print(max(ciagi_regularne, key=len))
 
     
 
