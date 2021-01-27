@@ -1,5 +1,5 @@
-# dane = list(map(int, open("dane4.txt").readlines()))
-dane = [4,11,4,1,4,7,11,12,13,14,7,0,3]
+dane = list(map(int, open("dane4.txt").readlines()))
+# dane = [4,11,4,1,4,7,11,12,13,14,7,0,3]
 # dane = [14,7,0,3]
 
 def oblicz_roznice(a,b):
@@ -90,9 +90,14 @@ for i, liczba in enumerate(dane[:-1]):
         if kolejna_liczba_jest_ostatnia_liczba():
             ciagi_regularne.append([aktualna_liczba, kolejna_liczba])
     
-print(dane)
-print(ciagi_regularne)
-print(max(ciagi_regularne, key=len))
+max_ciag = max(ciagi_regularne, key=len)
+
+print("zad2", max_ciag[0], max_ciag[-1], ", dlugosc:",len(max_ciag))
 
     
+krotnosci = {k: 0 for k in set(roznice)}
 
+for roznica in roznice: 
+    krotnosci[roznica] += 1
+
+print("zad3", max(krotnosci, key=lambda x: krotnosci[x]))
